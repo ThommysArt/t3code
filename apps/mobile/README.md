@@ -65,6 +65,10 @@ The native lint task runs SwiftLint for Swift plus ktlint and detekt for Kotlin.
 
 ## EAS Builds
 
+This Expo app lives in a monorepo under `apps/mobile`. In expo.dev GitHub build settings,
+set the repository **Base directory** to `apps/mobile`; otherwise Expo will inspect the
+repository root and will not find this app's `eas.json` profiles.
+
 CI uses Expo fingerprinting with the `preview:dev` profile to reuse an existing compatible build when possible, or start a new internal EAS build when native runtime inputs change. Production and default local builds continue to use the `appVersion` runtime policy.
 
 For preview or production EAS environments, set `T3CODE_CLERK_PUBLISHABLE_KEY`,
