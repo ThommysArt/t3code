@@ -1,0 +1,52 @@
+# Reduce EAS archive size (critical for monorepo + pnpm + large vendored native bits).
+# EAS respects this + .gitignore when creating the upload tarball from the project directory.
+
+# === Heavy iOS-only / Android-irrelevant (big win for Android builds) ===
+modules/t3-terminal/Vendor/**
+**/*.xcframework/**
+**/*-arm64*.a
+**/*-simulator/**
+
+# === Generated native projects (never commit these) ===
+android/**
+ios/**
+
+# === Local / dev / build artifacts ===
+.expo/**
+.expo-shared/**
+dist/**
+web-build/**
+*.log
+.DS_Store
+**/.DS_Store
+
+# === Things the EAS worker can re-install / doesn't need in the archive ===
+# (pnpm monorepo means real deps live in root via symlinks; these patterns help the packer)
+node_modules/**
+.pnpm/**
+**/node_modules/**
+**/.pnpm/**
+
+# === Docs, tests, examples inside deps (safe to drop) ===
+node_modules/**/docs/**
+node_modules/**/example/**
+node_modules/**/test/**
+node_modules/**/__tests__/**
+node_modules/**/coverage/**
+
+# Keep the *source* of our custom expo modules (file: deps) and the small nitro tgz.
+# The heavy compiled artifacts inside them are already covered above.
+
+# Additional aggressive excludes for size (shiki languages, etc. are pulled in via workspace)
+**/@shikijs/**
+**/shiki/**
+**/@shikijs/langs/**
+**/@shikijs/themes/**
+
+# Note: because this is a pnpm workspace, a lot of the real dependency content
+# lives in the repo-root node_modules/.pnpm via symlinks. The packer may still
+# pull a large amount of JS. .easignore + running from apps/mobile (or GitHub base dir)
+# is the best we can do. The archive will still be large (~100MB+). 
+
+# For even smaller uploads in CI, consider using EAS's "builds" config or a separate
+# lightweight checkout, but the current setup works for local/CI as documented.

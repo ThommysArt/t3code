@@ -133,7 +133,7 @@ export function ReviewSheet() {
       selectedSection,
       draftMessage,
     });
-  const NativeReviewDiffView = resolveNativeReviewDiffView()!;
+  const NativeReviewDiffView = resolveNativeReviewDiffView();
   const reviewFiles = parsedDiff.kind === "files" ? parsedDiff.files : [];
   const fileVisibility = useReviewFileVisibility({
     threadKey: reviewCache.threadKey,
@@ -339,7 +339,7 @@ export function ReviewSheet() {
       </Stack.Toolbar>
 
       <View className="flex-1 bg-sheet">
-        {selectedSection && parsedDiff.kind === "files" ? (
+        {selectedSection && parsedDiff.kind === "files" && NativeReviewDiffView != null ? (
           <View
             className="flex-1"
             style={{
@@ -374,6 +374,30 @@ export function ReviewSheet() {
               />
             </View>
           </View>
+        ) : selectedSection && parsedDiff.kind === "files" ? (
+          <ScrollView
+            contentInsetAdjustmentBehavior="never"
+            contentInset={{ top: topContentInset, bottom: Math.max(insets.bottom, 18) + 18 }}
+            contentOffset={{ x: 0, y: -topContentInset }}
+            scrollIndicatorInsets={{
+              top: topContentInset,
+              bottom: Math.max(insets.bottom, 18) + 18,
+            }}
+            showsVerticalScrollIndicator={false}
+            style={{ flex: 1 }}
+          >
+            {listHeader}
+            <View className="gap-3 border-b border-border bg-card px-4 py-4">
+              <Text className="text-[12px] text-amber-600 dark:text-amber-400">
+                Interactive diff review is currently only available on iOS. Showing raw diff below.
+              </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} bounces={false}>
+                <Text selectable className="font-mono text-[12px] leading-[19px] text-foreground">
+                  {selectedSection.diff ?? ""}
+                </Text>
+              </ScrollView>
+            </View>
+          </ScrollView>
         ) : (
           <ScrollView
             contentInsetAdjustmentBehavior="never"
